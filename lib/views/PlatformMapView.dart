@@ -21,11 +21,15 @@ final PanelController panelViewController = PanelController();
 
 class _PlatformMapViewState extends State<PlatformMapView> {
 
+  TextEditingController locationNameController = TextEditingController();
+
   bool panelVisible = false;
   Set<Marker> markers = {};
   double handleWidth = 90;
   double handleHeight = 7;
 
+  double? locationLat;
+  double? locationLong;
 
   @override
   void initState() {
@@ -34,10 +38,38 @@ class _PlatformMapViewState extends State<PlatformMapView> {
 
   void mapLongPress(LatLng tapPos) {
     Vibrate.feedback(FeedbackType.selection);
-    showCustomDialog(context, title: "Save location?", bodyText: "Would you like to save this location?", onTap: () {createMarker(tapPos); Navigator.pop(context);});
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: Text("Save Location?"),
+          content: Column(
+            children: [
+              Center(
+                child: TextFormField(
+                  controller: locationNameController,
+                  decoration: const InputDecoration(
+                    border: UnderlineInputBorder(),
+                    labelText: 'Enter Location Name',
+                  ),
+                ),
+              )
+            ],
+          ),
+          actions: <Widget>[
+            MaterialButton(
+                child: const Text("Cancel"),
+                onPressed: () => Navigator.pop(context)),
+            MaterialButton(
+                child: const Text("Ok"),
+                onPressed: () { createMarker(tapPos, locationNameController.value.text); Navigator.pop(context);})
+          ],
+        );
+      }
+    );
   }
 
-  void createMarker(LatLng tapPos) {
+  void createMarker(LatLng tapPos, locationName) {
     Marker marker = Marker(
       markerId: MarkerId("Location $tapPos"),
       position: LatLng(tapPos.latitude, tapPos.longitude),
@@ -82,18 +114,33 @@ class _PlatformMapViewState extends State<PlatformMapView> {
             ],
           ),
         ),
-        Padding(
-          padding: EdgeInsets.only(top: 15, left: 20),
-          child: Container(
-            alignment: Alignment.centerLeft,
-            child: Text("Wulleringa Falls", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)),
-          )
+        Row(
+          children: [
+            Padding(
+                padding: EdgeInsets.only(top: 15, left: 20),
+                child: Container(
+                  alignment: Alignment.centerLeft,
+                  child: Text(locationNameController.value.text, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)),
+                )
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 5, top: 15),
+              child: SizedBox(
+                height: 20,
+                width: 20,
+                child: GestureDetector(
+                  onLongPress: () {Fluttertoast.showToast(msg: "Verified Campsite", backgroundColor: Colors.green);},
+                  child: Image.asset('assets/Images/verifiedBadge.png'),
+                ),
+              )
+            )
+          ],
         ),
         Padding(
           padding: EdgeInsets.only(top: 5, left: 20),
           child: Container(
             alignment: Alignment.centerLeft,
-            child: Text("72 Wulleringa Drive, Sydney, 1440"),
+            child: Text("$locationLat, $locationLong}"),
           ),
         ),
         Padding(
@@ -128,8 +175,6 @@ class _PlatformMapViewState extends State<PlatformMapView> {
             ),
           ),
         ),
-        Text("4"),
-        Text("5"),
       ],
     );
   }
@@ -143,7 +188,7 @@ class _PlatformMapViewState extends State<PlatformMapView> {
             child: PlatformMap(
               initialCameraPosition: CameraPosition(target: LatLng(-37.971237,144.4926947), zoom: 5),
               zoomControlsEnabled: false,
-              onLongPress: (tapPos) {mapLongPress(tapPos);},
+              onLongPress: (tapPos) {mapLongPress(tapPos); locationLat = tapPos.latitude; locationLong = tapPos.longitude;},
               markers: markers,
             ),
           ),
