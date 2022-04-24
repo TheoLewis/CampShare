@@ -7,7 +7,6 @@ import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:platform_maps_flutter/platform_maps_flutter.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:async/async.dart';
 
 class PlatformMapView extends StatefulWidget {
   bool? isGuest;
@@ -24,6 +23,11 @@ class _PlatformMapViewState extends State<PlatformMapView> {
   TextEditingController locationNameController = TextEditingController();
 
   bool panelVisible = false;
+  bool toiletsAvailable = true;
+  bool showersAvailable = true;
+  bool waterAvailable = true;
+  bool disabledAvailable = true;
+  bool noUtilities = true;
   Set<Marker> markers = {};
   double handleWidth = 90;
   double handleHeight = 7;
@@ -34,6 +38,13 @@ class _PlatformMapViewState extends State<PlatformMapView> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      if(!showersAvailable && !toiletsAvailable && !waterAvailable && !disabledAvailable) {
+        noUtilities = true;
+      } else {
+        noUtilities = false;
+      }
+    });
   }
 
   void mapLongPress(LatLng tapPos) {
@@ -191,6 +202,64 @@ class _PlatformMapViewState extends State<PlatformMapView> {
             ),
           ),
         ),
+        Padding(
+          padding: EdgeInsets.only(top: 10, left: 20),
+          child: Container(
+            alignment: Alignment.centerLeft,
+            child: Text("Utilities", style: TextStyle(fontWeight: FontWeight.bold)),
+          )
+        ),
+        Padding(
+          padding: EdgeInsets.only(top: 10, left: 20),
+          child: Container(
+            alignment: Alignment.centerLeft,
+            child: Row(
+              children: [
+                Visibility(
+                  visible: waterAvailable,
+                  child: SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: Image.asset('assets/Images/waterUtility.png'),
+                  ),
+                ),
+                Visibility(
+                  visible: showersAvailable,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 7.5),
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: Image.asset('assets/Images/showerUtility.png'),
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: toiletsAvailable,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 7.5),
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: Image.asset('assets/Images/bathroomUtility.png'),
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: disabledAvailable,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 7.5),
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: Image.asset('assets/Images/disabilityUtility.png'),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        )
       ],
     );
   }

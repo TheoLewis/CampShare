@@ -68,6 +68,12 @@ flutter:
     - assets/Images/download.jpg
     - assets/Images/addImage.png
     - assets/Images/campgroundImage.png
+    - assets/Images/bathroomUtility.png
+    - assets/Images/waterUtility.png
+    - assets/Images/showerUtility.png
+    - assets/Images/disabilityUtility.png
+    - assets/Images/noUtilities.png
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
