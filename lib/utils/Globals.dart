@@ -1,7 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:platform_maps_flutter/platform_maps_flutter.dart';
+import 'dart:ui' as ui;
 
 bool? isGuest;
+bool? isVerified;
 
 double screenWidth(context) {
   return MediaQuery.of(context).size.width;
@@ -58,4 +64,16 @@ Future<dynamic> showCustomDialogNoCancel(BuildContext context,
         );
       }
   );
+}
+
+Future<Uint8List> getBytesFromAsset(String path, int width) async {
+  ByteData data = await rootBundle.load(path);
+  ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
+  ui.FrameInfo fi = await codec.getNextFrame();
+  return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!.buffer.asUint8List();
+}
+
+Future<BitmapDescriptor> changeIcon(image, size) async {
+  final Uint8List markerIcon = await getBytesFromAsset(image, size);
+  return BitmapDescriptor.fromBytes(markerIcon);
 }

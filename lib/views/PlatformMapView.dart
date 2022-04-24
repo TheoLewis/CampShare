@@ -69,11 +69,11 @@ class _PlatformMapViewState extends State<PlatformMapView> {
     );
   }
 
-  void createMarker(LatLng tapPos, locationName) {
+  void createMarker(LatLng tapPos, locationName) async {
     Marker marker = Marker(
       markerId: MarkerId("Location $tapPos"),
       position: LatLng(tapPos.latitude, tapPos.longitude),
-      icon: BitmapDescriptor.defaultMarker,
+      icon: await changeIcon('assets/Images/campgroundImage.png', 164),
       onTap: () {
         setState(() {
           panelVisible = true;
@@ -123,15 +123,18 @@ class _PlatformMapViewState extends State<PlatformMapView> {
                   child: Text(locationNameController.value.text, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28)),
                 )
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 5, top: 15),
-              child: SizedBox(
-                height: 20,
-                width: 20,
-                child: GestureDetector(
-                  onLongPress: () {Fluttertoast.showToast(msg: "Verified Campsite", backgroundColor: Colors.green);},
-                  child: Image.asset('assets/Images/verifiedBadge.png'),
-                ),
+            Visibility(
+              visible: isVerified ?? false,
+              child: Padding(
+                  padding: const EdgeInsets.only(left: 5, top: 15),
+                  child: SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: GestureDetector(
+                      onLongPress: () {Fluttertoast.showToast(msg: "Verified Campsite", backgroundColor: Color(0xff72FF59));},
+                      child: Image.asset('assets/Images/verifiedBadge.png'),
+                    ),
+                  )
               )
             )
           ],
@@ -140,7 +143,7 @@ class _PlatformMapViewState extends State<PlatformMapView> {
           padding: EdgeInsets.only(top: 5, left: 20),
           child: Container(
             alignment: Alignment.centerLeft,
-            child: Text("$locationLat, $locationLong}"),
+            child: Text("$locationLat, $locationLong"),
           ),
         ),
         Padding(
@@ -187,6 +190,7 @@ class _PlatformMapViewState extends State<PlatformMapView> {
           Center(
             child: PlatformMap(
               initialCameraPosition: CameraPosition(target: LatLng(-37.971237,144.4926947), zoom: 5),
+              mapType: MapType.normal,
               zoomControlsEnabled: false,
               onLongPress: (tapPos) {mapLongPress(tapPos); locationLat = tapPos.latitude; locationLong = tapPos.longitude;},
               markers: markers,

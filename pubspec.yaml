@@ -68,6 +68,7 @@ flutter:
     - assets/Images/download.jpg
     - assets/Images/addImage.png
     - assets/Images/verifiedBadge.png
+    - assets/Images/campgroundImage.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
