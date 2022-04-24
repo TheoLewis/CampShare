@@ -62,7 +62,7 @@ class _PlatformMapViewState extends State<PlatformMapView> {
                 onPressed: () => Navigator.pop(context)),
             MaterialButton(
                 child: const Text("Ok"),
-                onPressed: () { createMarker(tapPos, locationNameController.value.text); Navigator.pop(context);})
+                onPressed: () { createMarker(tapPos, locationNameController.value.text); Navigator.pop(context); })
           ],
         );
       }
@@ -70,19 +70,23 @@ class _PlatformMapViewState extends State<PlatformMapView> {
   }
 
   void createMarker(LatLng tapPos, locationName) async {
-    Marker marker = Marker(
-      markerId: MarkerId("Location $tapPos"),
-      position: LatLng(tapPos.latitude, tapPos.longitude),
-      icon: await changeIcon('assets/Images/campgroundImage.png', 164),
-      onTap: () {
-        setState(() {
-          panelVisible = true;
-        });
-      }
-    );
-    setState(() {
-      markers.add(marker);
-    });
+    if(markers.length < 3) {
+      Marker marker = Marker(
+          markerId: MarkerId("Location $tapPos"),
+          position: LatLng(tapPos.latitude, tapPos.longitude),
+          icon: await changeIcon('assets/Images/campgroundImage.png', 64),
+          onTap: () {
+            setState(() {
+              panelVisible = true;
+            });
+          }
+      );
+      setState(() {
+        markers.add(marker);
+      });
+    } else {
+      Fluttertoast.showToast(msg: "You have exceeded the listing limit.\n View our plans for more listings.", toastLength: Toast.LENGTH_LONG);
+    }
   }
 
   Column slideUpPanel() {
@@ -103,7 +107,16 @@ class _PlatformMapViewState extends State<PlatformMapView> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(left: screenWidth(context) / 2 - handleWidth),
+                  padding: EdgeInsets.only(left: screenWidth(context) / 2 - handleWidth - 10),
+                  child: GestureDetector(
+                      onTap: () {setState(() {
+
+                      });},
+                      child: Icon(Icons.edit, color: Colors.grey[300])
+                  )
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 10),
                 child: GestureDetector(
                   onTap: () {setState(() {
                     panelVisible = false;
@@ -132,7 +145,7 @@ class _PlatformMapViewState extends State<PlatformMapView> {
                     width: 20,
                     child: GestureDetector(
                       onLongPress: () {Fluttertoast.showToast(msg: "Verified Campsite", backgroundColor: Color(0xff72FF59));},
-                      child: Image.asset('assets/Images/verifiedBadge.png'),
+                      //child: Image.asset('assets/Images/verifiedBadge.png'),
                     ),
                   )
               )
