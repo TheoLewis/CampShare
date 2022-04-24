@@ -1,10 +1,12 @@
 import 'dart:typed_data';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:platform_maps_flutter/platform_maps_flutter.dart';
 import 'dart:ui' as ui;
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+late Future<Database> database;
 
 bool? isGuest;
 bool? isVerified;
@@ -76,4 +78,18 @@ Future<Uint8List> getBytesFromAsset(String path, int width) async {
 Future<BitmapDescriptor> changeIcon(image, size) async {
   final Uint8List markerIcon = await getBytesFromAsset(image, size);
   return BitmapDescriptor.fromBytes(markerIcon);
+}
+
+void createUserDb() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  database = openDatabase(
+    join(await getDatabasesPath(), 'userPreferences.db'),
+    onCreate: (db, version) async {
+      await db.execute(
+          'CREATE TABLE campMarkers(lat REAL, long REAL)'
+      );
+    },
+    version: 1,
+  );
+  print('we are here');
 }
